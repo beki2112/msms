@@ -1,10 +1,10 @@
-"use client";
+'use client'
 import React, { useState, FormEvent, ChangeEvent, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from 'sonner'; // Correct import from Sonner
 import { useRouter } from 'next/navigation';
 
 interface FormValues {
@@ -19,11 +19,10 @@ const AddStudent = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const { toast } = useToast();
   const router = useRouter();
 
   const handleChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => { // Explicitly type e
+    (e: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
       setFormData((prevData) => ({
         ...prevData,
@@ -33,7 +32,7 @@ const AddStudent = () => {
     []
   );
 
-  const handleSubmit = useCallback(async (e: FormEvent) => { // Explicitly type e
+  const handleSubmit = useCallback(async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitError(null);
@@ -58,27 +57,20 @@ const AddStudent = () => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log('Form Data:', formData);
 
+      // Show success toast
+      toast.success('Student added successfully!'); // Use toast here
+
       // Reset form on success and redirect
       setFormData({ name: '', email: '' });
-      toast({
-        variant: "default",
-        title: "Success",
-        description: "Student added successfully!",
-      });
       router.push('/students');
-
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to add student. Please try again.';
       setSubmitError(errorMessage);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: errorMessage,
-      });
+      toast.error(errorMessage); // Use toast here
     } finally {
       setIsSubmitting(false);
     }
-  }, [formData, toast, router]);
+  }, [formData, router]);
 
   return (
     <div className="p-6 bg-gray-100 dark:bg-gray-900 min-h-screen flex items-center justify-center">
@@ -137,5 +129,3 @@ const AddStudent = () => {
     </div>
   );
 };
-
-export default AddStudent;
